@@ -1,0 +1,5 @@
+Faker==19.3.0
+faker_e164==0.1.0
+selenium==4.11.2
+webdriver_manager==3.8.6
+pdflatex==0.1.3
