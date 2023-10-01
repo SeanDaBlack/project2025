@@ -13,16 +13,18 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.chrome.service import Service
 
 from resume_faker import make_resume
-from pdf2image import convert_from_path
 from email_data import *
 import random
-import undetected_chromedriver as uc
-from constants import IDs, choices
-import json
+from constants import IDs, CLOUD_ENABLED, CLOUD_DISABLED
 
 
 fake = faker.Faker()
 fake.add_provider(E164Provider)
+
+parser = argparse.ArgumentParser("SCRIPT_DESCRIPTION")
+parser.add_argument('--cloud', action='store_true', default=CLOUD_DISABLED,
+                    required=False, help="Run in cloud", dest='cloud')
+args = parser.parse_args()
 
 
 def random_email(name=None):
@@ -85,7 +87,7 @@ def createFakeIdentity():
 
 
 def start_driver(url):
-    if False:
+    if args.cloud == CLOUD_ENABLED:
         s = Service("/bin/chromedriver")
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
@@ -201,7 +203,7 @@ def fill_out_form(driver, identity, prompts):
     #remove disabled attribute from submit button
     driver.execute_script(f"document.getElementById('{IDs['submit']}').removeAttribute('disabled');")
     #upload resume
-    driver.find_element(By.ID, IDs["resume"]).send_keys(os.getcwd()+'/'+identity['last_name']+'-Resume.pdf')
+    # driver.find_element(By.ID, IDs["resume"]).send_keys(os.getcwd()+'/'+identity['last_name']+'-Resume.pdf')
 
     time.sleep(5)
     
@@ -226,25 +228,24 @@ def sendApplicationCount():
 
 def main():
     # PROMPT HANDLER
-    # parse_responses()
-
     url = "https://apply.project2025.org/ords/r/p25/pub/questionnaire"
-
     identity = createFakeIdentity()
-    resume_generation(identity)
+    # resume_generation(identity)
     print("Fetching prompts...")
     prompts = get_prompts(identity)
 
+    print("Starting driver...")
     driver = start_driver(url)
     driver.get(url)
     test_success(driver)
     time.sleep(5)
+    print("Filling out form...")
     fill_out_form(driver, identity, prompts)
-
+    print("Application submitted!")
     # driver.maximize_window()
-    time.sleep(10)
-    os.remove(identity['last_name']+'-Resume.pdf')
-    time.sleep(10000)
+    time.sleep(5)
+    # os.remove(identity['last_name']+'-Resume.pdf')
+    # time.sleep(10000)
 
 
 while True:

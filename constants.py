@@ -21,3 +21,6 @@ IDs = {
 }
 
 choices = ["Agree", "Disagree", "Neither Agree nor Disagree"]
+
+CLOUD_ENABLED = True
+CLOUD_DISABLED = False
