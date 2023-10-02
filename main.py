@@ -225,7 +225,7 @@ def fill_out_form(driver, identity, prompts):
 
 def sendApplicationCount():
     requests.post(
-        "https://us-east4-trackingapi-398123.cloudfunctions.net/Add-Data-Count"
+        "https://us-east4-trackingapi-398123.cloudfunctions.net/Add-Data-Count-2025"
     )
 
 
