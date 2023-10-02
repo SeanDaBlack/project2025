@@ -16,7 +16,7 @@ from resume_faker import make_resume
 from email_data import *
 import random
 from constants import IDs, CLOUD_ENABLED, CLOUD_DISABLED
-
+import json
 
 fake = faker.Faker()
 fake.add_provider(E164Provider)
@@ -24,6 +24,9 @@ fake.add_provider(E164Provider)
 parser = argparse.ArgumentParser("SCRIPT_DESCRIPTION")
 parser.add_argument('--cloud', action='store_true', default=CLOUD_DISABLED,
                     required=False, help="Run in cloud", dest='cloud')
+#add limit argument to limit number of applications
+parser.add_argument('--limit', type=int, default=1,
+                    required=False, help="limits the number of prompts", dest='limit')
 args = parser.parse_args()
 
 
@@ -62,7 +65,6 @@ def gen_fake_number():
         ]
     )
 
-
 #
 def createFakeIdentity():
     # age = random.randint(18, 55)
@@ -84,7 +86,6 @@ def createFakeIdentity():
     )
 
     return fake_identity
-
 
 def start_driver(url):
     if args.cloud == CLOUD_ENABLED:
@@ -131,14 +132,16 @@ def click_element(driver, element):
     driver.execute_script("arguments[0].click()", element)
 
 
-def get_prompts(idenity):
-    index = random.randint(0, 60000)
+def get_prompts(limit=10):
+    index = random.randint(0, 400000)
     r = requests.post(
         "https://us-east4-get-spammed.cloudfunctions.net/get-prompt",
-        json={"index": index},
+        json={"index": index,
+              "limit": limit
+              },
     )
 
-    return r.json()
+    return json.loads(r.text)
 
 def resume_generation(identity):
     resume_filename = identity['last_name']+'-Resume'
@@ -229,21 +232,24 @@ def sendApplicationCount():
 def main():
     # PROMPT HANDLER
     url = "https://apply.project2025.org/ords/r/p25/pub/questionnaire"
-    identity = createFakeIdentity()
-    # resume_generation(identity)
     print("Fetching prompts...")
-    prompts = get_prompts(identity)
-
-    print("Starting driver...")
-    driver = start_driver(url)
-    driver.get(url)
-    test_success(driver)
-    time.sleep(5)
-    print("Filling out form...")
-    fill_out_form(driver, identity, prompts)
-    print("Application submitted!")
-    # driver.maximize_window()
-    time.sleep(5)
+    # print(args.limit)
+    prompts = get_prompts(limit=args.limit)
+    for prompt in prompts:
+        # print(prompt)
+        print("Creating fake identity...")
+        identity = createFakeIdentity()
+        # resume_generation(identity)
+        print("Starting driver...")
+        driver = start_driver(url)
+        driver.get(url)
+        test_success(driver)
+        time.sleep(2)
+        print("Filling out form...")
+        fill_out_form(driver, identity, prompt)
+        print("Application submitted!")
+        # driver.maximize_window()
+        time.sleep(5)
     # os.remove(identity['last_name']+'-Resume.pdf')
     # time.sleep(10000)
 
