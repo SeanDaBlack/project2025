@@ -249,6 +249,7 @@ def main():
         fill_out_form(driver, identity, prompt)
         print("Application submitted!")
         # driver.maximize_window()
+        sendApplicationCount()
         time.sleep(5)
     # os.remove(identity['last_name']+'-Resume.pdf')
     # time.sleep(10000)
