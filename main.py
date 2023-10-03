@@ -204,7 +204,7 @@ def fill_out_form(driver, identity, prompts):
         )
 
     #remove disabled attribute from submit button
-    driver.execute_script(f"document.getElementById('{IDs['submit']}').removeAttribute('disabled');")
+    driver.execute_script(f"document.getElementById('{IDs['applyCan']}').removeAttribute('disabled');")
     #upload resume
     # driver.find_element(By.ID, IDs["resume"]).send_keys(os.getcwd()+'/'+identity['last_name']+'-Resume.pdf')
 
@@ -215,12 +215,12 @@ def fill_out_form(driver, identity, prompts):
     #     )
     click_element(driver, driver.find_element(By.ID, IDs["resume"]))
     #submit
-    click_element(driver, driver.find_element(By.ID, IDs["submit"]))
+    click_element(driver, driver.find_element(By.ID, IDs["applyCan"]))
     #scroll to submit button
-    driver.execute_script("arguments[0].scrollIntoView();", driver.find_element(By.ID, IDs["submit"]))
+    driver.execute_script("arguments[0].scrollIntoView();", driver.find_element(By.ID, IDs["applyCan"]))
     time.sleep(1)
     #submit
-    click_element(driver, driver.find_element(By.ID, IDs["submit"]))
+    click_element(driver, driver.find_element(By.ID, IDs["applyCan"]))
 
 
 def sendApplicationCount():
